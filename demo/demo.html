@@ -1,0 +1,46 @@
+<html>
+<head>
+</head>
+<body>
+
+<script>
+
+var socket = new WebSocket("ws://localhost:8081/ws");
+
+socket.onopen = function (event) {
+  var toSend = [
+    {
+      name: "jsontest",
+      url: "http://ip.jsontest.com/"
+    },
+    {
+      name: "datetime",
+      url: "http://time.jsontest.com/"
+    }
+  ];
+
+  socket.send(JSON.stringify(toSend));
+  console.log("sent urls");
+};
+
+socket.onmessage = function (event) {
+  var res = JSON.parse(event.data);
+  console.log(res);
+  
+  var newDiv = document.createElement("div");
+  var newContent;
+
+  if (res.name === "jsontest") {
+    newContent = document.createTextNode(res.body.ip);
+  } else if (res.name === "datetime") {
+    newContent = document.createTextNode(res.body.time);
+  }
+    
+  newDiv.appendChild(newContent); 
+  document.body.appendChild(newDiv);
+}
+
+</script>
+
+</body>
+</html>
