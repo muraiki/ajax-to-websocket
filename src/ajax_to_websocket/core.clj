@@ -35,13 +35,6 @@
         (when-not (nil? req-map)
           (>! result-chan req-map)))))))
 
-(defn is-diff? [a-diff]
-  "given the output vector from data/diff, return if different in any way"
-  (if (and (nil? (first a-diff))
-           (nil? (second a-diff)))
-      false
-      true))
-
 (defn send-message
   "Sends a message to the websocket channel, converting it to json"
   [websocket message]
@@ -52,7 +45,7 @@
   [websocket json-res last-state]
   (let [url-name (keyword (:name json-res))
         res      (:body json-res)]
-    (when (is-diff? (data/diff res (url-name @last-state)))
+    (when-not (= res (url-name @last-state))
       (swap! last-state assoc-in [url-name] res)
       (send-message websocket
         {:name (:name json-res),
